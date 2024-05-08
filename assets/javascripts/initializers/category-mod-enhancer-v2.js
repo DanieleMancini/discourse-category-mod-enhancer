@@ -175,6 +175,17 @@ export default {
             }
           }
         })
+
+        api.modifyClass('controller:user', {
+          pluginId: 'category-mod-enhancer',
+          get displayTopLevelAdminButton() {
+            if (!user.staff && !user.is_category_moderator) {
+              return false;
+            }
+
+            return this.site.desktopView;
+          }
+        });
       }
     })
   }

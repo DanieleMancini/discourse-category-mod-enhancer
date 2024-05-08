@@ -23,6 +23,10 @@ after_initialize do
           )
     end
 
+    add_to_class(:guardian, :is_category_moderator?) do ||
+        Category.all.any? { |category| is_category_group_moderator?(category) }
+    end
+
     add_to_class(:post_guardian, :can_lock_post?) do |post|
         can_see_post?(post) && (is_staff? || (post.topic && can_moderate?(post.topic)))
     end
@@ -47,6 +51,10 @@ after_initialize do
         return true if is_admin?
 
         (SiteSetting.moderators_change_post_ownership && is_staff?) || can_perform_action_available_to_group_moderators?(topic)
+    end
+
+    add_to_serializer(:current_user, :is_category_moderator) do
+        object.guardian.is_category_moderator?
     end
 
     class ::TopicsController < ApplicationController
